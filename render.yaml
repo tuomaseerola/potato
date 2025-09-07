@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: potato-annotation
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    buildCommand: ""
+    startCommand: "/app/start.sh"
+    healthCheckPath: /
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHONPATH
+        value: /app
+    disk:
+      name: potato-data
+      mountPath: /app/annotation_output
+      sizeGB: 1
