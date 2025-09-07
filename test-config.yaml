@@ -1,7 +1,7 @@
 {
     "port": 8000,
     "server_name": "Potato Test Server",
-    "annotation_task_name": "Test Annotation Task",
+    "annotation_task_name": "Test Annotation Task1",
     "output_annotation_dir": "annotation_output/",
     "output_annotation_format": "jsonl", 
     "annotation_codebook_url": "",
@@ -22,7 +22,7 @@
         {
             "annotation_type": "multiselect",
             "name": "sentiment", 
-            "description": "What sentiment categories apply to this text?",
+            "description": "What sentiment categories apply to this text2?",
             "labels": [
                "positive", "negative", "neutral", "question", "request"
             ],
