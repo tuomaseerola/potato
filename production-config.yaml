@@ -3,7 +3,7 @@
 
     "server_name": "Potato Annotation Tool",
 
-    "annotation_task_name": "Text Annotation with Potato",
+    "annotation_task_name": "Text Annotation with Potato2",
 
     # Output directory for annotations - using persistent volume
     "output_annotation_dir": "annotation_output/",
@@ -37,7 +37,7 @@
         {
             "annotation_type": "multiselect",
             "name": "categories", 
-            "description": "What categories apply to this text?",
+            "description": "What categories apply to this text2?",
             "labels": [
                "positive", "negative", "neutral", "question", "request", "complaint"
             ],
