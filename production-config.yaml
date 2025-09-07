@@ -6,7 +6,7 @@
     "annotation_task_name": "Text Annotation with Potato",
 
     # Output directory for annotations - using persistent volume
-    "output_annotation_dir": "/app/annotation_output/",
+    "output_annotation_dir": "annotation_output/",
 
     # Output format for annotations
     "output_annotation_format": "jsonl", 

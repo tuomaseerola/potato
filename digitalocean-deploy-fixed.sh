@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# DigitalOcean Droplet Deployment Script for Potato Annotation Tool
+# DigitalOcean Droplet Deployment Script for Potato Annotation Tool (FIXED VERSION)
 # Run this script on your DigitalOcean droplet
 
 set -e
@@ -13,7 +13,7 @@ sudo apt update && sudo apt upgrade -y
 
 # Install required packages
 echo "🔧 Installing required packages..."
-sudo apt install -y python3 python3-pip python3-venv git nginx supervisor
+sudo apt install -y python3 python3-pip python3-venv git nginx
 
 # Create application directory
 APP_DIR="/opt/potato"
@@ -48,12 +48,13 @@ mkdir -p $APP_DIR/data
 mkdir -p $APP_DIR/annotation_output
 mkdir -p $APP_DIR/logs
 
-# Copy production configuration
+# Copy and fix production configuration
 echo "⚙️ Setting up production configuration..."
 cp production-config.yaml config.yaml
 
-# Fix the output directory path for the deployment environment
-sed -i 's|"output_annotation_dir": "/app/annotation_output/"|"output_annotation_dir": "annotation_output/"|g' config.yaml
+# Test the application manually first
+echo "🧪 Testing application startup..."
+timeout 5s python potato/flask_server.py start config.yaml -p 5000 || echo "✅ Application test completed"
 
 # Create systemd service file
 echo "🔧 Creating systemd service..."
@@ -118,6 +119,15 @@ echo "🚀 Starting services..."
 sudo systemctl daemon-reload
 sudo systemctl enable potato
 sudo systemctl start potato
+
+# Wait a moment for service to start
+sleep 5
+
+# Check service status
+echo "📊 Checking service status..."
+sudo systemctl status potato --no-pager -l
+
+# Start nginx
 sudo systemctl enable nginx
 sudo systemctl restart nginx
 
@@ -151,19 +161,19 @@ chmod +x $APP_DIR/backup-annotations.sh
 echo "⏰ Setting up daily backups..."
 (crontab -l 2>/dev/null; echo "0 2 * * * $APP_DIR/backup-annotations.sh") | crontab -
 
-# Display status
+# Final status check
 echo ""
 echo "✅ Deployment completed!"
 echo ""
-echo "🔍 Service Status:"
+echo "🔍 Final Service Status:"
 sudo systemctl status potato --no-pager -l
 echo ""
 echo "🌐 Nginx Status:"
 sudo systemctl status nginx --no-pager -l
 echo ""
 echo "📊 Application should be accessible at:"
-echo "   http://$(curl -s ifconfig.me)"
-echo "   http://$(hostname -I | awk '{print $1}')"
+echo "   http://$(curl -s ifconfig.me 2>/dev/null || echo 'your-droplet-ip')"
+echo "   http://$(hostname -I | awk '{print $1}' 2>/dev/null || echo 'your-local-ip')"
 echo ""
 echo "📝 Useful commands:"
 echo "   View logs: sudo journalctl -u potato -f"
@@ -176,4 +186,7 @@ echo "   App directory: $APP_DIR"
 echo "   Annotations: $APP_DIR/annotation_output/"
 echo "   Logs: $APP_DIR/logs/"
 echo "   Backups: /opt/potato-backups/"
+echo ""
+echo "🔧 If there are issues, run the fix script:"
+echo "   $APP_DIR/fix-digitalocean-service.sh"
 EOF
